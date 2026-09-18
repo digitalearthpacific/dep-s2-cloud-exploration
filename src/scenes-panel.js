@@ -3,12 +3,7 @@ import { SCL, PRESETS, DEFAULT_PRESET, maskClouds, toOps } from './mask.js';
 import { rgbImage, sclImage, maskImage, medianRgbImage, canvasFor } from './render.js';
 
 const MASK_PINK = [255, 0, 255];
-// Thin cirrus (10) is excluded from the interactive editor entirely — in practice, over the
-// Pacific, it flags far more false positives than real ones (bright water/reef, mostly).
-// PRESETS.OLD still lists it (unchanged, in mask.js) purely as the historical baseline the
-// median-compare panel's OLD side reads directly from `mask.js`, not from this editor's state
-// — so that comparison still shows the real difference dropping it makes.
-const EDITABLE_CLASSES = SCL.filter((c) => c.value !== 0 && c.value !== 10);
+const EDITABLE_CLASSES = SCL.filter((c) => c.value !== 0);
 const pct = (m) => ((m.reduce((s, v) => s + v, 0) / m.length) * 100).toFixed(1);
 // Every values entry always has all three fields, even for a preset written before `close`
 // existed or one that never mentions a given class — so a number input never renders blank.
@@ -39,8 +34,7 @@ export function createScenesPanel(root) {
   const state = {
     tiles: [],
     values: Object.fromEntries(EDITABLE_CLASSES.map((c) => [c.value, normalize(initial[c.value])])),
-    // Excludes class 10 even if a chosen preset (OLD) lists it — see EDITABLE_CLASSES above.
-    enabled: new Set(Object.keys(initial).map(Number).filter((v) => v !== 10)),
+    enabled: new Set(Object.keys(initial).map(Number)),
     selected: null,
     view: 'mask',
   };
@@ -90,8 +84,7 @@ export function createScenesPanel(root) {
     const preset = PRESETS[el.preset.value];
     if (!preset) return;
     for (const c of EDITABLE_CLASSES) state.values[c.value] = normalize(preset[c.value]);
-    // Excludes class 10 even for OLD, which does list it — see EDITABLE_CLASSES above.
-    state.enabled = new Set(Object.keys(preset).map(Number).filter((v) => v !== 10));
+    state.enabled = new Set(Object.keys(preset).map(Number));
     renderClassEditor();
   });
   // Live label only — like the class editor above, the filter itself doesn't apply until
