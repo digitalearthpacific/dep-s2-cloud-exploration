@@ -1,4 +1,3 @@
-import { Marker } from 'maplibre-gl';
 import { createMap } from './map.js';
 import { loadGeomadYear } from './geomad.js';
 import { addFootprintLayers, setFootprints, setFootprintsVisible, addTileBoxLayer, setTileBox } from './footprints.js';
@@ -15,7 +14,6 @@ const panel = createScenesPanel($('scenes'));
 
 const state = { year: Number($('year').value), band: $('band').value, items: [], point: null };
 let abortYear = null, abortScenes = null;
-const marker = new Marker({ color: '#ff5722' });
 
 // ── GeoMAD main view ──
 // GeoMAD tile footprints from the STAC API. Kept but off: the WMTS covers the imagery
@@ -93,7 +91,6 @@ async function loadScenes() {
 
 function setPoint(lon, lat) {
   state.point = { lon, lat };
-  marker.setLngLat([lon, lat]).addTo(map);
   setTileBox(map, lon, lat, Number($('tile-size').value));
   $('point').textContent = `${lon.toFixed(4)}, ${lat.toFixed(4)}`;
   loadScenes();

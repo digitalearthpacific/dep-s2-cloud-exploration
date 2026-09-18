@@ -28,14 +28,14 @@ const OLD_FILTERS = {
 export const PRESETS = {
   OLD: OLD_FILTERS,
   // Drops cloud shadow (3) and thin cirrus (10): Sen2Cor labels dark ocean as both. Tuned by
-  // hand against real Pacific scenes, 2026-09-18. Class 8 (cloud medium probability) is the
-  // hardest to get right: over atolls, 3/3/3 balances stripping thin beach/reef false
+  // hand against real Pacific scenes, 2026-09-18. Classes 8/9 (cloud medium/high probability)
+  // are the hardest to get right: over atolls, 3/3/3 balances stripping thin beach/reef false
   // positives (opening) against consolidating patchy mountain-mist detections (closing) —
   // still open whether mountainous scenes need a different setting; see mountain testing.
   NEW: {
     1: { open: 1, dilate: 1 },
     8: { open: 3, close: 3, dilate: 3 },
-    9: { open: 2, dilate: 5 },
+    9: { open: 3, close: 3, dilate: 3 },
   },
 };
 export const DEFAULT_PRESET = 'NEW';
