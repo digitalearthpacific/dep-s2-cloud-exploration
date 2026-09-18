@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S-2 Cloud Explorer</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="topbar">
+      <h1>S-2 Cloud Explorer</h1>
+      <label>Year <span id="year-label"></span>
+        <input id="year" type="range" min="2017" max="2025" step="1" value="2024" />
+      </label>
+      <label>Band
+        <select id="band">
+          <option value="rgb">RGB</option>
+          <option value="count">count</option>
+        </select>
+      </label>
+      <label>Tile size (px @ 10 m)
+        <input id="tile-size" type="number" min="32" max="1024" step="32" value="256" />
+      </label>
+      <button id="pick" type="button">Pick point</button>
+      <span class="hint" id="point"></span>
+      <span class="hint" id="status"></span>
+    </div>
+    <div id="map"></div>
+    <div id="scenes">
+      <div id="scenes-bar">
+        <span id="scenes-status">Click "Pick point", then click the map to load Sentinel-2 scenes for this point and year.</span>
+        <progress id="scenes-progress" hidden></progress>
+        <label>Preset <select id="preset"></select></label>
+        <label>Show
+          <select id="view">
+            <option value="mask">SCL · mask over RGB</option>
+            <option value="masked">SCL · RGB with mask cut out</option>
+          </select>
+        </label>
+      </div>
+      <div id="scenes-body">
+        <div id="median-compare">
+          <div id="median-canvases">
+            <canvas id="median-old"></canvas>
+            <canvas id="median-new"></canvas>
+            <div id="median-handle"></div>
+          </div>
+          <input id="median-slider" type="range" min="0" max="100" value="50" />
+          <div id="median-labels"><span>OLD</span><span>NEW</span></div>
+        </div>
+        <div id="classes">
+          <div id="class-rows"></div>
+          <label id="scene-filter">
+            <span>Exclude scenes over <span id="scene-filter-value">100</span>% cloud</span>
+            <input id="scene-filter-slider" type="range" min="0" max="100" step="5" value="100" />
+          </label>
+          <button id="recalculate" type="button">Recalculate</button>
+        </div>
+        <div id="scenes-views">
+          <div id="strip" class="row"></div>
+          <div id="decomposed" class="row"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

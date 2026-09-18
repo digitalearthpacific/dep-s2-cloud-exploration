@@ -1,0 +1,78 @@
+html, body { margin: 0; height: 100%; font: 13px system-ui, sans-serif; background: #111; color: #eee; }
+body { display: flex; flex-direction: column; }
+
+/* ── top bar: map controls, always visible, no floating overlay ── */
+#topbar {
+  flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  padding: 8px 14px; background: #16161a; border-bottom: 1px solid #333;
+}
+#topbar h1 { font-size: 15px; margin: 0; }
+#topbar label { display: flex; align-items: center; gap: 6px; }
+#topbar input[type=range] { width: 140px; }
+#status, .hint { font-size: 12px; color: #999; }
+#pick { background: #333; color: #eee; border: 1px solid #666; border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+#pick.active { background: #ff5722; border-color: #ff5722; color: #fff; }
+
+/* ── map: fills whatever space is left between the bars ── */
+#map { flex: 1; min-height: 0; position: relative; }
+
+/* ── scenes: always on screen, docked below the map ── */
+#scenes {
+  /* No explicit height: sized to its own content (the bar plus #scenes-body's grid row),
+     so there's no leftover blank space when that content is shorter than some arbitrary
+     fraction of the viewport. */
+  flex: none; background: #141418; display: flex; flex-direction: column;
+  border-top: 1px solid #444;
+}
+#scenes-bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 6px 12px; border-bottom: 1px solid #333; }
+#scenes-bar label { display: flex; gap: 6px; align-items: center; }
+#scenes-status { flex: 1; color: #bbb; }
+#scenes-progress { width: 120px; }
+
+/* Grid, not flex: a CSS Grid auto row sizes to the tallest non-stretched sibling's own
+   content (here, #classes/#scenes-views), and *then* stretches #median-compare to match —
+   Grid explicitly excludes a stretched item with `aspect-ratio` from that sizing pass, so
+   it can't circularly force the row (and thus itself) down to its own min-content height,
+   which is exactly the bug flexbox hit here (see git history). Fixed-width middle column
+   (not vh) so this doesn't rescale with the browser window; #scenes-body's own max-height
+   is likewise a fixed px ceiling, only kicking in (with a scrollbar) if content ever grows
+   past it — not the primary way this is sized.
+*/
+#scenes-body { display: grid; grid-template-columns: auto 390px 1fr; align-items: stretch; max-height: 620px; overflow-y: auto; }
+
+#median-compare { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-right: 1px solid #333; box-sizing: border-box; }
+#median-canvases { position: relative; flex: 1; min-height: 0; background: #000; overflow: hidden; }
+#median-canvases canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+#median-new { clip-path: inset(0 50% 0 0); }
+#median-handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fbc27b; pointer-events: none; transform: translateX(-1px); }
+#median-slider { width: 100%; }
+#median-labels { display: flex; justify-content: space-between; font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.03em; }
+
+#classes { overflow-y: auto; padding: 8px 12px; border-right: 1px solid #333; display: flex; flex-direction: column; gap: 10px; }
+#class-rows { display: flex; flex-direction: column; gap: 3px; }
+#scene-filter { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #ccc; }
+#scene-filter input[type=range] { width: 100%; }
+#recalculate {
+  background: #2f6fed; color: #fff; border: none; border-radius: 4px; padding: 8px 12px;
+  font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.02em;
+}
+#recalculate:hover { background: #4a80f0; }
+.class-row { display: grid; grid-template-columns: 16px 12px 1fr 52px 52px 52px; gap: 6px; align-items: center; font-size: 12px; }
+.class-row.off { color: #777; }
+.class-head { color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; }
+.class-row input[type=number] { width: 100%; box-sizing: border-box; font: 12px monospace; background: #222; color: #eee; border: 1px solid #444; border-radius: 3px; padding: 2px 4px; }
+.class-row input[type=number]:disabled { opacity: 0.35; }
+.swatch { width: 12px; height: 12px; border: 1px solid #666; display: inline-block; }
+
+#scenes-views { min-width: 0; overflow-x: auto; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px; }
+/* Reserved up front so the first scene arriving doesn't jump the whole layout (it also
+   resizes #median-compare, via the ResizeObserver on #classes' row). Matches one column's
+   content: 3-line scene-head (11px × 1.3 line-height) + two 160px canvasFor() thumbnails +
+   .scene's padding/gaps — keep in sync if those change (`canvasFor(img, px = 160)` in
+   render.js is the one to watch). */
+#strip { min-height: 385px; }
+.row { display: flex; gap: 8px; align-items: flex-start; }
+.scene { flex: none; display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; border-radius: 4px; border: 1px solid transparent; }
+.scene.selected { border-color: #fbc27b; }
+.scene-head { font-size: 11px; color: #ccc; line-height: 1.3; width: 160px; }
+.scene canvas { image-rendering: pixelated; background: #000; }
