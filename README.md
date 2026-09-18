@@ -15,3 +15,10 @@ npm run dev    # http://127.0.0.1:5173
 npm test       # morphology + mask unit tests
 npm run build  # static bundle in dist/
 ```
+
+## How it works
+
+Visit the page at [https://digitalearthpacific.github.io/dep-s2-cloud-exploration](https://digitalearthpacific.github.io/dep-s2-cloud-exploration)
+and view a region and year. Find somewhere where the geomad is bad (cloud/missing data) and click the point to pick
+the region. Now the app will load all the scenes and show an opinionated mask using SCL. If you can make one better
+than the default, then amazing!
